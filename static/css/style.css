@@ -1,0 +1,109 @@
+:root {
+    --bleu-ocean: #0077B6;
+    --vert: #06D6A0;
+    --orange: #FF6B35;
+}
+
+.bg-primary {
+    background-color: var(--bleu-ocean) !important;
+}
+
+.btn-primary {
+    background-color: var(--bleu-ocean);
+    border-color: var(--bleu-ocean);
+}
+
+.btn-primary:hover {
+    background-color: #005a8c;
+    border-color: #005a8c;
+}
+
+.btn-success {
+    background-color: var(--vert);
+    border-color: var(--vert);
+}
+
+.btn-success:hover {
+    background-color: #05b788;
+    border-color: #05b788;
+}
+
+.hero {
+    background: linear-gradient(135deg, var(--bleu-ocean), #023E8A);
+    color: white;
+    padding: 100px 0;
+    text-align: center;
+}
+
+.stat-card {
+    text-align: center;
+    padding: 30px;
+}
+
+.stat-card h2 {
+    font-size: 3rem;
+    color: var(--bleu-ocean);
+    font-weight: bold;
+}
+
+#map {
+    height: 70vh;
+    width: 100%;
+    border-radius: 10px;
+}
+
+.badge-difficulte-facile {
+    background-color: var(--vert);
+}
+
+.badge-difficulte-moyen {
+    background-color: #FFD166;
+    color: black;
+}
+
+.badge-difficulte-difficile {
+    background-color: var(--orange);
+}
+
+footer {
+    margin-top: auto;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+/* Style pour le bouton de déconnexion dans la navbar */
+.navbar-nav form {
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-nav .btn-link {
+    color: rgba(255, 255, 255, 0.55);
+    padding: 0.5rem 1rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.navbar-nav .btn-link:hover,
+.navbar-nav .btn-link:focus {
+    color: rgba(255, 255, 255, 0.75);
+    background: none;
+}
+
+.navbar-dark .navbar-nav .btn-link {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.navbar-dark .navbar-nav .btn-link:hover,
+.navbar-dark .navbar-nav .btn-link:focus {
+    color: rgba(255, 255, 255, 0.75);
+}

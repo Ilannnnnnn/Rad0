@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Mon profil - Rad0{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">Mon profil</h2>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <div class="display-1 mb-3">👤</div>
+                    <h4>{{ user.username }}</h4>
+                    {% if user.email %}
+                        <p class="text-muted">{{ user.email }}</p>
+                    {% endif %}
+                    {% if profil.commune %}
+                        <p class="text-muted">📍 {{ profil.commune }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Statistiques</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <strong>Participations :</strong>
+                            <span class="badge bg-primary">{{ profil.total_participations }}</span>
+                        </li>
+                        <li class="mb-2">
+                            <strong>Kg collectés :</strong>
+                            <span class="badge bg-success">{{ profil.total_kg|floatformat:1 }} kg</span>
+                        </li>
+                        <li class="mb-2">
+                            <strong>Signalements :</strong>
+                            <span class="badge bg-warning text-dark">{{ signalements.count }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Mes événements</h5>
+                </div>
+                <div class="card-body">
+                    {% if participations %}
+                        <div class="list-group">
+                            {% for participation in participations %}
+                                <a href="{% url 'evenement_detail' participation.evenement.pk %}" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ participation.evenement.titre }}</h6>
+                                        <small>{{ participation.evenement.date|date:"d/m/Y" }}</small>
+                                    </div>
+                                    <p class="mb-1 small">{{ participation.evenement.lieu }}</p>
+                                    {% if participation.present %}
+                                        <span class="badge bg-success">Présent</span>
+                                        {% if participation.kg_collectes %}
+                                            <span class="badge bg-info">{{ participation.kg_collectes }} kg</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inscrit</span>
+                                    {% endif %}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Vous n'êtes inscrit à aucun événement pour le moment.</p>
+                        <a href="{% url 'carte' %}" class="btn btn-primary">Voir les événements</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Mes signalements</h5>
+                </div>
+                <div class="card-body">
+                    {% if signalements %}
+                        <div class="list-group">
+                            {% for signalement in signalements %}
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ signalement.get_type_dechet_display }}</h6>
+                                        <small>{{ signalement.created_at|date:"d/m/Y" }}</small>
+                                    </div>
+                                    <p class="mb-1 small">{{ signalement.description|truncatewords:20 }}</p>
+                                    {% if signalement.traite %}
+                                        <span class="badge bg-success">Traité</span>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark">En attente</span>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Vous n'avez effectué aucun signalement.</p>
+                        <a href="{% url 'signaler' %}" class="btn btn-warning">Signaler une pollution</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Rad0 - Accueil{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div class="container">
+        <h1 class="display-3 fw-bold mb-3">🚣 Rad0</h1>
+        <p class="lead fs-2 mb-4">Zero Déchets en Rade</p>
+        <p class="mb-4">Ensemble, nettoyons la rade de Brest et préservons notre environnement marin</p>
+        <a href="{% url 'carte' %}" class="btn btn-light btn-lg me-2">Voir la carte</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'creer_evenement' %}" class="btn btn-success btn-lg">Organiser un ramassage</a>
+        {% else %}
+            <a href="{% url 'register' %}" class="btn btn-success btn-lg">Rejoindre la communauté</a>
+        {% endif %}
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Notre Impact</h2>
+        <div class="row text-center">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <h2>{{ stats.benevoles }}</h2>
+                    <p class="text-muted">Bénévoles actifs</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <h2>{{ stats.kg_collectes|floatformat:0 }}</h2>
+                    <p class="text-muted">Kg de déchets collectés</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <h2>{{ stats.evenements }}</h2>
+                    <p class="text-muted">Événements organisés</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Comment ça marche ?</h2>
+        <div class="row">
+            <div class="col-md-4 text-center mb-4">
+                <div class="display-4 text-primary mb-3">1️⃣</div>
+                <h4>Inscrivez-vous</h4>
+                <p class="text-muted">Créez votre compte gratuitement en quelques secondes</p>
+            </div>
+            <div class="col-md-4 text-center mb-4">
+                <div class="display-4 text-primary mb-3">2️⃣</div>
+                <h4>Rejoignez un événement</h4>
+                <p class="text-muted">Consultez la carte et inscrivez-vous aux ramassages près de chez vous</p>
+            </div>
+            <div class="col-md-4 text-center mb-4">
+                <div class="display-4 text-primary mb-3">3️⃣</div>
+                <h4>Agissez pour la planète</h4>
+                <p class="text-muted">Participez aux nettoyages et faites la différence</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

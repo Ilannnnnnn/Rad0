@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ evenement.titre }} - Rad0{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>{{ evenement.titre }}</h1>
+            <p class="text-muted">
+                Organisé par {{ evenement.organisateur.username }} le {{ evenement.date|date:"d/m/Y à H:i" }}
+            </p>
+
+            <div class="mb-3">
+                <span class="badge badge-difficulte-{{ evenement.difficulte }}">{{ evenement.get_difficulte_display }}</span>
+                {% if evenement.famille %}
+                    <span class="badge bg-info">Adapté aux familles</span>
+                {% endif %}
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Description</h5>
+                    <p class="card-text">{{ evenement.description|linebreaks }}</p>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Lieu de rendez-vous</h5>
+                    <p class="card-text"><strong>{{ evenement.lieu }}</strong></p>
+                    <div id="map" style="height: 300px;"></div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Participants ({{ evenement.nb_inscrits }}/{{ evenement.max_participants }})</h5>
+                    <div class="row">
+                        {% for participation in evenement.participation_set.all %}
+                            <div class="col-auto mb-2">
+                                <span class="badge bg-secondary">{{ participation.user.username }}</span>
+                            </div>
+                        {% empty %}
+                            <p class="text-muted">Aucun participant pour le moment</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    {% if user.is_authenticated %}
+                        {% if est_inscrit %}
+                            <a href="{% url 'desinscription_evenement' evenement.pk %}" class="btn btn-danger w-100 mb-2">Se désinscrire</a>
+                        {% else %}
+                            {% if evenement.est_complet %}
+                                <button class="btn btn-secondary w-100 mb-2" disabled>Événement complet</button>
+                            {% else %}
+                                <a href="{% url 'inscription_evenement' evenement.pk %}" class="btn btn-success w-100 mb-2">S'inscrire</a>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if user == evenement.organisateur %}
+                            <hr>
+                            <p class="text-muted small">Actions organisateur :</p>
+                            <a href="{% url 'modifier_evenement' evenement.pk %}" class="btn btn-outline-primary w-100 mb-2">Modifier</a>
+                            <a href="{% url 'supprimer_evenement' evenement.pk %}" class="btn btn-outline-danger w-100">Supprimer</a>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-muted">Connectez-vous pour vous inscrire</p>
+                        <a href="{% url 'login' %}" class="btn btn-primary w-100">Connexion</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6>Informations</h6>
+                    <ul class="list-unstyled small">
+                        <li><strong>Date :</strong> {{ evenement.date|date:"d/m/Y" }}</li>
+                        <li><strong>Heure :</strong> {{ evenement.date|date:"H:i" }}</li>
+                        <li><strong>Lieu :</strong> {{ evenement.lieu }}</li>
+                        <li><strong>Difficulté :</strong> {{ evenement.get_difficulte_display }}</li>
+                        <li><strong>Places restantes :</strong> {{ evenement.places_restantes }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const map = L.map('map').setView([{{ evenement.latitude }}, {{ evenement.longitude }}], 15);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    L.marker([{{ evenement.latitude }}, {{ evenement.longitude }}]).addTo(map)
+        .bindPopup('<strong>{{ evenement.titre }}</strong><br>{{ evenement.lieu }}')
+        .openPopup();
+</script>
+{% endblock %}

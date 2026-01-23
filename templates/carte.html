@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Rad0 - Carte{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div id="map"></div>
+        </div>
+        <div class="col-md-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4>Événements à venir</h4>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'creer_evenement' %}" class="btn btn-primary btn-sm">Créer</a>
+                {% endif %}
+            </div>
+            <div class="list-group" style="max-height: 60vh; overflow-y: auto;">
+                {% for evenement in evenements %}
+                    <a href="{% url 'evenement_detail' evenement.pk %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ evenement.titre }}</h6>
+                            <small>{{ evenement.date|date:"d/m" }}</small>
+                        </div>
+                        <p class="mb-1 small">{{ evenement.lieu }}</p>
+                        <small class="text-muted">
+                            <span class="badge badge-difficulte-{{ evenement.difficulte }}">{{ evenement.get_difficulte_display }}</span>
+                            {% if evenement.famille %}🏠{% endif %}
+                            {{ evenement.nb_inscrits }}/{{ evenement.max_participants }} inscrits
+                        </small>
+                    </a>
+                {% empty %}
+                    <p class="text-muted text-center py-4">Aucun événement à venir</p>
+                {% endfor %}
+            </div>
+
+            {% if user.is_authenticated %}
+                <div class="mt-4">
+                    <a href="{% url 'signaler' %}" class="btn btn-warning w-100">Signaler une pollution</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const map = L.map('map').setView([48.39, -4.48], 12);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Marqueurs pour les événements
+    {% for evenement in evenements %}
+        const marker{{ evenement.pk }} = L.marker([{{ evenement.latitude }}, {{ evenement.longitude }}], {
+            icon: L.icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            })
+        }).addTo(map);
+        marker{{ evenement.pk }}.bindPopup(`
+            <strong>{{ evenement.titre }}</strong><br>
+            {{ evenement.date|date:"d/m/Y H:i" }}<br>
+            {{ evenement.lieu }}<br>
+            <a href="{% url 'evenement_detail' evenement.pk %}" class="btn btn-sm btn-primary mt-2">Voir</a>
+        `);
+    {% endfor %}
+
+    // Marqueurs pour les signalements
+    {% for signalement in signalements %}
+        const signalementMarker{{ signalement.pk }} = L.marker([{{ signalement.latitude }}, {{ signalement.longitude }}], {
+            icon: L.icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            })
+        }).addTo(map);
+        signalementMarker{{ signalement.pk }}.bindPopup(`
+            <strong>Signalement: {{ signalement.get_type_dechet_display }}</strong><br>
+            {{ signalement.description|truncatewords:10 }}<br>
+            <small class="text-muted">Par {{ signalement.user.username }}</small>
+        `);
+    {% endfor %}
+</script>
+{% endblock %}
